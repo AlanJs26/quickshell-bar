@@ -1,10 +1,9 @@
-import "root:/modules/common"
-import "root:/modules/common/widgets"
-import "../"
+import qs.modules.common
+import qs.modules.common.widgets
+import qs
 import QtQuick
 import Quickshell.Io
 import Quickshell
-import Quickshell.Hyprland
 
 QuickToggleButton {
     id: root
@@ -16,8 +15,8 @@ QuickToggleButton {
         source: 'cloudflare-dns-symbolic'
 
         anchors.centerIn: parent
-        width: 12
-        height: 12
+        width: 16
+        height: 16
         colorize: true
         color: root.toggled ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer1
 
@@ -40,11 +39,12 @@ QuickToggleButton {
         id: connectProc
         command: ["warp-cli", "connect"]
         onExited: (exitCode, exitStatus) => {
-            console.log("Warp connection exited with code and status:", exitCode, exitStatus)
-            if (exitCode === 0) {
-                connectProc.running = true
-            } else {
-                console.error("Warp connection failed, please check your connection or try again later.")
+            if (exitCode !== 0) {
+                Quickshell.execDetached(["notify-send", 
+                    Translation.tr("Cloudflare WARP"), 
+                    Translation.tr("Connection failed. Please inspect manually with the <tt>warp-cli</tt> command")
+                    , "-a", "Shell"
+                ])
             }
         }
     }
@@ -57,7 +57,11 @@ QuickToggleButton {
             if (exitCode === 0) {
                 connectProc.running = true
             } else {
-                Quickshell.execDetached(["notify-send", "Cloudflare Warp", "Registration failed. Please inspect manually with the <tt>warp-cli</tt> command", "-a", "Shell"])
+                Quickshell.execDetached(["notify-send", 
+                    Translation.tr("Cloudflare WARP"), 
+                    Translation.tr("Registration failed. Please inspect manually with the <tt>warp-cli</tt> command"),
+                    "-a", "Shell"
+                ])
             }
         }
     }
@@ -70,7 +74,6 @@ QuickToggleButton {
             id: warpStatusCollector
             onStreamFinished: {
                 if (warpStatusCollector.text.length > 0) {
-                    console.log("Showing warp")
                     root.visible = true
                 }
                 if (warpStatusCollector.text.includes("Unable")) {
@@ -84,6 +87,6 @@ QuickToggleButton {
         }
     }
     StyledToolTip {
-        content: qsTr("Cloudflare WARP (1.1.1.1)")
+        content: Translation.tr("Cloudflare WARP (1.1.1.1)")
     }
 }

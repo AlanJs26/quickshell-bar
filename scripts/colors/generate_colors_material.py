@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import argparse
 import math
 import json
@@ -94,9 +94,7 @@ display_color = lambda rgba: "\x1b[38;2;{};{};{}m{}\x1b[0m".format(
 )
 
 
-def calculate_optimal_size(
-    width: int, height: int, bitmap_size: int
-) -> tuple[int, int]:
+def calculate_optimal_size(width: int, height: int, bitmap_size: int) -> (int, int):
     image_area = width * height
     bitmap_area = bitmap_size**2
     scale = math.sqrt(bitmap_area / image_area) if image_area > bitmap_area else 1
@@ -155,9 +153,6 @@ if args.path is not None:
 elif args.color is not None:
     argb = hex_to_argb(args.color)
     hct = Hct.from_int(argb)
-else:
-    print("Missing arguments")
-    exit()
 
 if args.scheme == "scheme-fruit-salad":
     from materialyoucolor.scheme.scheme_fruit_salad import SchemeFruitSalad as Scheme
@@ -244,8 +239,8 @@ if args.debug == False:
 else:
     if args.path is not None:
         print("\n--------------Image properties-----------------")
-        print(f"Image size: {wsize} x {hsize}")  # type: ignore
-        print(f"Resized image: {wsize_new} x {hsize_new}")  # type: ignore
+        print(f"Image size: {wsize} x {hsize}")
+        print(f"Resized image: {wsize_new} x {hsize_new}")
     print("\n---------------Selected color------------------")
     print(f"Dark mode: {darkmode}")
     print(f"Scheme: {args.scheme}")
@@ -258,7 +253,7 @@ else:
     print("\n----------Harmonize terminal colors------------")
     for color, code in term_colors.items():
         rgba = rgba_from_argb(hex_to_argb(code))
-        code_source = term_source_colors[color]  # type: ignore
+        code_source = term_source_colors[color]
         rgba_source = rgba_from_argb(hex_to_argb(code_source))
         print(
             f"{color.ljust(6)} : {display_color(rgba_source)} {code_source} --> {display_color(rgba)} {code}"

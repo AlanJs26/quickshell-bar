@@ -1,24 +1,22 @@
-import "root:/"
-import "root:/services"
-import "root:/modules/common"
-import "root:/modules/common/widgets"
-import "root:/modules/common/functions/color_utils.js" as ColorUtils
+import qs
+import qs.services
+import qs.modules.common
+import qs.modules.common.widgets
+import qs.modules.common.functions
 import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import QtQuick.Layouts
-import Quickshell.Io
 import Quickshell
 import Quickshell.Widgets
 import Quickshell.Wayland
-import Quickshell.Hyprland
 
 Item {
     id: root
     property real maxWindowPreviewHeight: 200
     property real maxWindowPreviewWidth: 300
     property real windowControlsHeight: 30
+    property real buttonPadding: 5
 
     property Item lastHoveredButton
     property bool buttonHovered: false
@@ -46,6 +44,9 @@ Item {
             objectProp: "appId"
             values: {
                 var map = new Map();
+                const mappings = {
+                    ['^kitty-scratchpad$']: 'kitty'
+                }
 
                 // Pinned apps
                 const pinnedApps = Config.options?.dock.pinnedApps ?? [];
@@ -60,14 +61,28 @@ Item {
                 if (pinnedApps.length > 0) {
                     map.set("SEPARATOR", { pinned: false, toplevels: [] });
                 }
-                
+
+                // Ignored apps
+                const ignoredRegexStrings = Config.options?.dock.ignoredAppRegexes ?? [];
+                const ignoredRegexes = ignoredRegexStrings.map(pattern => new RegExp(pattern, "i"));
                 // Open windows
                 for (const toplevel of ToplevelManager.toplevels.values) {
-                    if (!map.has(toplevel.appId.toLowerCase())) map.set(toplevel.appId.toLowerCase(), ({
+                    if (ignoredRegexes.some(re => re.test(toplevel.appId))) continue;
+                    let appId = toplevel.appId
+
+                    for(const [from, to] of Object.entries(mappings)) {
+                        const re = new RegExp(from, 'i')
+                        if(re.test(appId)) {
+                            appId = to
+                            break
+                        }
+                    }
+
+                    if (!map.has(appId.toLowerCase())) map.set(appId.toLowerCase(), ({
                         pinned: false,
                         toplevels: []
                     }));
-                    map.get(toplevel.appId.toLowerCase()).toplevels.push(toplevel);
+                    map.get(appId.toLowerCase()).toplevels.push(toplevel);
                 }
 
                 var values = [];
@@ -83,6 +98,9 @@ Item {
             required property var modelData
             appToplevel: modelData
             appListRoot: root
+
+            topInset: Appearance.sizes.hyprlandGapsOut + root.buttonPadding
+            bottomInset: Appearance.sizes.hyprlandGapsOut + root.buttonPadding
         }
     }
 
@@ -146,9 +164,6 @@ Item {
             implicitHeight: root.maxWindowPreviewHeight + root.windowControlsHeight + Appearance.sizes.elevationMargin * 2
             hoverEnabled: true
             x: {
-                if(!root.QsWindow?.window || !root.lastHoveredButton){
-                    return popupMouseArea.x
-                } 
                 const itemCenter = root.QsWindow?.mapFromItem(root.lastHoveredButton, root.lastHoveredButton?.width / 2, 0);
                 return itemCenter.x - width / 2
             }

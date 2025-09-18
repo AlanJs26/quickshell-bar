@@ -1,10 +1,6 @@
-import "root:/modules/common"
-import "root:/modules/common/widgets"
+import qs.modules.common
+import qs.modules.common.widgets
 import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
-import Quickshell
-import Quickshell.Io
 
 RippleButton {
     id: root
@@ -22,7 +18,7 @@ RippleButton {
             topMargin: 4
             leftMargin: 4
         }
-        color: Appearance.colors.colSecondaryContainer
+        color: Appearance.colors.colLayer2
         radius: Appearance.rounding.full
         implicitWidth: Math.max(20, elementNumber.implicitWidth)
         implicitHeight: Math.max(20, elementNumber.implicitHeight)
@@ -31,16 +27,16 @@ RippleButton {
         StyledText {
             id: elementNumber
             anchors.centerIn: parent
-            color: Appearance.colors.colOnSecondaryContainer
+            color: Appearance.colors.colOnLayer2
             text: root.element.number
-            font.pixelSize: Appearance.font.pixelSize.smaller
+            font.pixelSize: Appearance.font.pixelSize.smallest
         }
     }
 
     StyledText {
         id: elementSymbol
         anchors.centerIn: parent
-        color: Appearance.colors.colOnLayer2
+        color: Appearance.colors.colSecondary
         font.pixelSize: Appearance.font.pixelSize.huge
         text: root.element.symbol
     }

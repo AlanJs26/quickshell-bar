@@ -1,7 +1,7 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
 
-import "root:/modules/common"
+import qs.modules.common
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -13,7 +13,6 @@ import Quickshell.Io
 Singleton {
     id: root
     property string filePath: Directories.generatedMaterialThemePath
-    property string wallpaperPath: Directories.generatedWallpaperPath
 
     function reapplyTheme() {
         themeFileView.reload()

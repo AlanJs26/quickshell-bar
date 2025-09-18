@@ -1,15 +1,10 @@
-import "root:/"
-import "root:/services"
-import "root:/modules/common"
-import "root:/modules/common/widgets"
-import "root:/modules/common/functions/file_utils.js" as FileUtils
+import qs
+import qs.services
+import qs.modules.common
+import qs.modules.common.widgets
+import qs.modules.common.functions
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
-import Quickshell
-import Quickshell.Io
-import Quickshell.Widgets
-import Quickshell.Hyprland
 
 Item {
     id: root
@@ -18,7 +13,6 @@ Item {
     property real titleSpacing: 7
     implicitWidth: rowLayout.implicitWidth
     implicitHeight: rowLayout.implicitHeight
-    // implicitHeight: 310
 
     property var keyBlacklist: ["Super_L"]
     property var keySubstitutions: ({
@@ -37,26 +31,9 @@ Item {
     RowLayout { // Keybind columns
         id: rowLayout
         spacing: root.spacing
-        // anchors.fill: parent
-
-        // clip: true
-        // // contentWidth: parent.width
-        // contentHeight: 1000
-        // Component.onCompleted: {
-        //     console.log(keybinds.children.length)
-        //     // console.log(keybinds.children?.reduce((p,n) => { 
-        //     //     console.log(n.name)
-        //     //
-        //     //     return p+n.children.length
-        //     // }, 0))
-        // }
-        //
-        // ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-        // ScrollBar.vertical.interactive: true
-
         Repeater {
             model: keybinds.children
-
+            
             delegate: ColumnLayout { // Keybind sections
                 spacing: root.spacing
                 required property var modelData
@@ -160,7 +137,7 @@ Item {
 
                 }
             }
-
+            
         }
     }
     
